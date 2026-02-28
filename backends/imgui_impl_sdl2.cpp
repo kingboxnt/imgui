@@ -21,11 +21,6 @@
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
-//  2026-01-15: Changed GetClipboardText() handler to return nullptr on error aka clipboard contents is not text. Consistent with other backends. (#9168)
-//  2025-09-24: Skip using the SDL_GetGlobalMouseState() state when one of our window is hovered, as the SDL_MOUSEMOTION data is reliable. Fix macOS notch mouse coordinates issue in fullscreen mode + better perf on X11. (#7919, #7786)
-//  2025-09-18: Call platform_io.ClearPlatformHandlers() on shutdown.
-//  2025-09-15: Content Scales are always reported as 1.0 on Wayland. (#8921)
-//  2025-07-08: Made ImGui_ImplSDL2_GetContentScaleForWindow(), ImGui_ImplSDL2_GetContentScaleForDisplay() helpers return 1.0f on Emscripten and Android platforms, matching macOS logic. (#8742, #8733)
 //  2025-06-11: Added ImGui_ImplSDL2_GetContentScaleForWindow(SDL_Window* window) and ImGui_ImplSDL2_GetContentScaleForDisplay(int display_index) helper to facilitate making DPI-aware apps.
 //  2025-04-09: Don't attempt to call SDL_CaptureMouse() on drivers where we don't call SDL_GetGlobalMouseState(). (#8561)
 //  2025-03-21: Fill gamepad inputs and set ImGuiBackendFlags_HasGamepad regardless of ImGuiConfigFlags_NavEnableGamepad being set.
@@ -123,7 +118,6 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten/em_js.h>
 #endif
-#undef Status // X11 headers are leaking this.
 
 #if SDL_VERSION_ATLEAST(2,0,4) && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__) && !(defined(__APPLE__) && TARGET_OS_IOS) && !defined(__amigaos4__)
 #define SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE    1
@@ -141,7 +135,7 @@
 struct ImGui_ImplSDL2_Data
 {
     SDL_Window*             Window;
-    Uint32                  WindowID;       // Stored in ImGuiViewport::PlatformHandle. Use SDL_GetWindowFromID() to get SDL_Window* from Uint32 WindowID.
+    Uint32                  WindowID;
     SDL_Renderer*           Renderer;
     Uint64                  Time;
     char*                   ClipboardTextData;
@@ -179,10 +173,7 @@ static const char* ImGui_ImplSDL2_GetClipboardText(ImGuiContext*)
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
     if (bd->ClipboardTextData)
         SDL_free(bd->ClipboardTextData);
-    if (SDL_HasClipboardText())
-        bd->ClipboardTextData = SDL_GetClipboardText();
-    else
-        bd->ClipboardTextData = nullptr;
+    bd->ClipboardTextData = SDL_GetClipboardText();
     return bd->ClipboardTextData;
 }
 
@@ -372,6 +363,7 @@ static ImGuiViewport* ImGui_ImplSDL2_GetViewportForWindowID(Uint32 window_id)
 // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
 // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
 // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+// If you have multiple SDL events and some of them are not meant to be used by dear imgui, you may need to filter events based on their windowID field.
 bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
 {
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
@@ -465,7 +457,7 @@ bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
                 bd->MouseLastLeaveFrame = ImGui::GetFrameCount() + 1;
             if (window_event == SDL_WINDOWEVENT_FOCUS_GAINED)
                 io.AddFocusEvent(true);
-            if (window_event == SDL_WINDOWEVENT_FOCUS_LOST)
+            else if (event->window.event == SDL_WINDOWEVENT_FOCUS_LOST)
                 io.AddFocusEvent(false);
             return true;
         }
@@ -490,7 +482,6 @@ static bool ImGui_ImplSDL2_Init(SDL_Window* window, SDL_Renderer* renderer, void
     ImGuiIO& io = ImGui::GetIO();
     IMGUI_CHECKVERSION();
     IM_ASSERT(io.BackendPlatformUserData == nullptr && "Already initialized a platform backend!");
-    //SDL_SetHint(SDL_HINT_EVENT_LOGGING, "2");
 
     // Obtain compiled and runtime versions
     SDL_version ver_compiled;
@@ -635,7 +626,6 @@ void ImGui_ImplSDL2_Shutdown()
     ImGui_ImplSDL2_Data* bd = ImGui_ImplSDL2_GetBackendData();
     IM_ASSERT(bd != nullptr && "No platform backend to shutdown, or already shutdown?");
     ImGuiIO& io = ImGui::GetIO();
-    ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 
     if (bd->ClipboardTextData)
         SDL_free(bd->ClipboardTextData);
@@ -646,7 +636,6 @@ void ImGui_ImplSDL2_Shutdown()
     io.BackendPlatformName = nullptr;
     io.BackendPlatformUserData = nullptr;
     io.BackendFlags &= ~(ImGuiBackendFlags_HasMouseCursors | ImGuiBackendFlags_HasSetMousePos | ImGuiBackendFlags_HasGamepad);
-    platform_io.ClearPlatformHandlers();
     IM_DELETE(bd);
 }
 
@@ -671,7 +660,6 @@ static void ImGui_ImplSDL2_UpdateMouseData()
     SDL_Window* focused_window = SDL_GetKeyboardFocus();
     const bool is_app_focused = (bd->Window == focused_window);
 #else
-    SDL_Window* focused_window = bd->Window;
     const bool is_app_focused = (SDL_GetWindowFlags(bd->Window) & SDL_WINDOW_INPUT_FOCUS) != 0; // SDL 2.0.3 and non-windowed systems: single-viewport only
 #endif
     if (is_app_focused)
@@ -680,20 +668,15 @@ static void ImGui_ImplSDL2_UpdateMouseData()
         if (io.WantSetMousePos)
             SDL_WarpMouseInWindow(bd->Window, (int)io.MousePos.x, (int)io.MousePos.y);
 
-        // (Optional) Fallback to provide unclamped mouse position when focused but not hovered (SDL_MOUSEMOTION already provides this when hovered or captured)
-        // Note that SDL_GetGlobalMouseState() is in theory slow on X11, but this only runs on rather specific cases. If a problem we may provide a way to opt-out this feature.
-        SDL_Window* hovered_window = SDL_GetMouseFocus();
+        // (Optional) Fallback to provide mouse position when focused (SDL_MOUSEMOTION already provides this when hovered or captured)
         const bool is_relative_mouse_mode = SDL_GetRelativeMouseMode() != 0;
-        if (hovered_window == nullptr && bd->MouseCanUseGlobalState && bd->MouseButtonsDown == 0 && !is_relative_mouse_mode)
+        if (bd->MouseCanUseGlobalState && bd->MouseButtonsDown == 0 && !is_relative_mouse_mode)
         {
             // Single-viewport mode: mouse position in client window coordinates (io.MousePos is (0,0) when the mouse is on the upper-left corner of the app window)
-            int mouse_x, mouse_y;
-            int window_x, window_y;
-            SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
-            SDL_GetWindowPosition(focused_window, &window_x, &window_y);
-            mouse_x -= window_x;
-            mouse_y -= window_y;
-            io.AddMousePosEvent((float)mouse_x, (float)mouse_y);
+            int window_x, window_y, mouse_x_global, mouse_y_global;
+            SDL_GetGlobalMouseState(&mouse_x_global, &mouse_y_global);
+            SDL_GetWindowPosition(bd->Window, &window_x, &window_y);
+            io.AddMousePosEvent((float)(mouse_x_global - window_x), (float)(mouse_y_global - window_y));
         }
     }
 }
@@ -734,11 +717,8 @@ float ImGui_ImplSDL2_GetContentScaleForWindow(SDL_Window* window)
 
 float ImGui_ImplSDL2_GetContentScaleForDisplay(int display_index)
 {
-    const char* sdl_driver = SDL_GetCurrentVideoDriver();
-    if (sdl_driver && strcmp(sdl_driver, "wayland") == 0)
-        return 1.0f;
 #if SDL_HAS_PER_MONITOR_DPI
-#if !defined(__APPLE__) && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__)
+#ifndef __APPLE__
     float dpi = 0.0f;
     if (SDL_GetDisplayDPI(display_index, &dpi, nullptr, nullptr) == 0)
         return dpi / 96.0f;
