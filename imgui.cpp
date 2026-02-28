@@ -218,7 +218,7 @@ CODE
  - This codebase aims to be highly optimized:
    - A typical idle frame should never call malloc/free.
    - We rely on a maximum of constant-time or O(N) algorithms. Limiting searches/scans as much as possible.
-   - We put particular energy in making sure performances are decent with typical "Debug" build settings as well.
+   - We put particular energy in making sure performances are decent with typical "调试" build settings as well.
      Which mean we tend to avoid over-relying on "zero-cost abstraction" as they aren't zero-cost at all.
  - This codebase aims to be both highly opinionated and highly flexible:
    - This code works because of the things it choose to solve or not solve.
@@ -503,7 +503,7 @@ CODE
                        - Textures: all API functions taking a 'ImTextureID' parameter are now taking a 'ImTextureRef'. Affected functions are: ImGui::Image(), ImGui::ImageWithBg(), ImGui::ImageButton(), ImDrawList::AddImage(), ImDrawList::AddImageQuad(), ImDrawList::AddImageRounded().
                        - Fonts: obsoleted ImFontAtlas::GetTexDataAsRGBA32(), GetTexDataAsAlpha8(), Build(), SetTexID(), IsBuilt() functions. The new protocol for backends to handle textures doesn't need them. Kept redirection functions (will obsolete).
                        - Fonts: ImFontConfig::OversampleH/OversampleV default to automatic (== 0) since v1.91.8. It is quite important you keep it automatic until we decide if we want to provide a way to express finer policy, otherwise you will likely waste texture space when using large glyphs. Note that the imgui_freetype backend doesn't use and does not need oversampling.
-                       - Fonts: specifying glyph ranges is now unnecessary. The value of ImFontConfig::GlyphRanges[] is only useful for legacy backends. All GetGlyphRangesXXXX() functions are now marked obsolete: GetGlyphRangesDefault(), GetGlyphRangesGreek(), GetGlyphRangesKorean(), GetGlyphRangesJapanese(), GetGlyphRangesChineseSimplifiedCommon(), GetGlyphRangesChineseFull(), GetGlyphRangesCyrillic(), GetGlyphRangesThai(), GetGlyphRangesVietnamese().
+                       - Fonts: specifying glyph ranges is now unnecessary. The value of ImFontConfig::GlyphRanges[] is only useful for legacy backends. All GetGlyphRangesXXXX() functions are now marked obsolete: GetGlyphRangesDefault(), GetGlyphRangesGreek(), GetGlyphRangesKorean(), GetGlyphRangesJapanese(), GetGlyphRangesChineseFull(), GetGlyphRangesChineseFull(), GetGlyphRangesCyrillic(), GetGlyphRangesThai(), GetGlyphRangesVietnamese().
                        - Fonts: removed ImFontAtlas::TexDesiredWidth to enforce a texture width. (#327)
                        - Fonts: if you create and manage ImFontAtlas instances yourself (instead of relying on ImGuiContext to create one, you'll need to call ImFontAtlasUpdateNewFrame() yourself. An assert will trigger if you don't.
                        - Fonts: obsolete ImGui::SetWindowFontScale() which is not useful anymore. Prefer using 'PushFont(NULL, style.FontSizeBase * factor)' or to manipulate other scaling factors.
@@ -625,8 +625,8 @@ CODE
                             - old: io.SetPlatformImeDataFn(ImGuiViewport* viewport, ImGuiPlatformImeData* data);
                             - new: io.PlatformSetImeDataFn(ImGuiContext* ctx, ImGuiViewport* viewport, ImGuiPlatformImeData* data);
  - 2024/06/21 (1.90.9) - BeginChild: added ImGuiChildFlags_NavFlattened as a replacement for the window flag ImGuiWindowFlags_NavFlattened: the feature only ever made sense for BeginChild() anyhow.
-                            - old: BeginChild("Name", size, 0, ImGuiWindowFlags_NavFlattened);
-                            - new: BeginChild("Name", size, ImGuiChildFlags_NavFlattened, 0);
+                            - old: BeginChild("名称", size, 0, ImGuiWindowFlags_NavFlattened);
+                            - new: BeginChild("名称", size, ImGuiChildFlags_NavFlattened, 0);
  - 2024/06/21 (1.90.9) - io: ClearInputKeys() (first exposed in 1.89.8) doesn't clear mouse data, newly added ClearInputMouse() does.
  - 2024/06/20 (1.90.9) - renamed ImGuiDragDropFlags_SourceAutoExpirePayload to ImGuiDragDropFlags_PayloadAutoExpire.
  - 2024/06/18 (1.90.9) - style: renamed ImGuiCol_TabActive -> ImGuiCol_TabSelected, ImGuiCol_TabUnfocused -> ImGuiCol_TabDimmed, ImGuiCol_TabUnfocusedActive -> ImGuiCol_TabDimmedSelected.
@@ -672,14 +672,14 @@ CODE
  - 2023/11/07 (1.90.0) - removed BeginChildFrame()/EndChildFrame() in favor of using BeginChild() with the ImGuiChildFlags_FrameStyle flag. kept inline redirection function (will obsolete).
                          those functions were merely PushStyle/PopStyle helpers, the removal isn't so much motivated by needing to add the feature in BeginChild(), but by the necessity to avoid BeginChildFrame() signature mismatching BeginChild() signature and features.
  - 2023/11/02 (1.90.0) - BeginChild: upgraded 'bool border = true' parameter to 'ImGuiChildFlags flags' type, added ImGuiChildFlags_Border equivalent. As with our prior "bool-to-flags" API updates, the ImGuiChildFlags_Border value is guaranteed to be == true forever to ensure a smoother transition, meaning all existing calls will still work.
-                           - old: BeginChild("Name", size, true)
-                           - new: BeginChild("Name", size, ImGuiChildFlags_Border)
-                           - old: BeginChild("Name", size, false)
-                           - new: BeginChild("Name", size) or BeginChild("Name", 0) or BeginChild("Name", size, ImGuiChildFlags_None)
+                           - old: BeginChild("名称", size, true)
+                           - new: BeginChild("名称", size, ImGuiChildFlags_Border)
+                           - old: BeginChild("名称", size, false)
+                           - new: BeginChild("名称", size) or BeginChild("名称", 0) or BeginChild("名称", size, ImGuiChildFlags_None)
                          **AMEND FROM THE FUTURE: from 1.91.1, 'ImGuiChildFlags_Border' is called 'ImGuiChildFlags_Borders'**
  - 2023/11/02 (1.90.0) - BeginChild: added child-flag ImGuiChildFlags_AlwaysUseWindowPadding as a replacement for the window-flag ImGuiWindowFlags_AlwaysUseWindowPadding: the feature only ever made sense for BeginChild() anyhow.
-                           - old: BeginChild("Name", size, 0, ImGuiWindowFlags_AlwaysUseWindowPadding);
-                           - new: BeginChild("Name", size, ImGuiChildFlags_AlwaysUseWindowPadding, 0);
+                           - old: BeginChild("名称", size, 0, ImGuiWindowFlags_AlwaysUseWindowPadding);
+                           - new: BeginChild("名称", size, ImGuiChildFlags_AlwaysUseWindowPadding, 0);
  - 2023/09/27 (1.90.0) - io: removed io.MetricsActiveAllocations introduced in 1.63. Same as 'g.DebugMemAllocCount - g.DebugMemFreeCount' (still displayed in Metrics, unlikely to be accessed by end-user).
  - 2023/09/26 (1.90.0) - debug tools: Renamed ShowStackToolWindow() ("Stack Tool") to ShowIDStackToolWindow() ("ID Stack Tool"), as earlier name was misleading. Kept inline redirection function. (#4631)
  - 2023/09/15 (1.90.0) - ListBox, Combo: changed signature of "name getter" callback in old one-liner ListBox()/Combo() apis. kept inline redirection function (will obsolete).
@@ -3523,7 +3523,7 @@ void ImGui::PopStyleColor(int count)
     ImGuiContext& g = *GImGui;
     if (g.ColorStack.Size < count)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopStyleColor() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopStyleColor() 次数过多！");
         count = g.ColorStack.Size;
     }
     while (count > 0)
@@ -3588,7 +3588,7 @@ void ImGui::PushStyleVar(ImGuiStyleVar idx, float val)
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->DataType != ImGuiDataType_Float || var_info->Count != 1)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PushStyleVar() variant with wrong type!");
+        IM_ASSERT_USER_ERROR(0, "调用错误类型的 PushStyleVar() 变体！");
         return;
     }
     float* pvar = (float*)var_info->GetVarPtr(&g.Style);
@@ -3602,7 +3602,7 @@ void ImGui::PushStyleVarX(ImGuiStyleVar idx, float val_x)
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->DataType != ImGuiDataType_Float || var_info->Count != 2)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PushStyleVar() variant with wrong type!");
+        IM_ASSERT_USER_ERROR(0, "调用错误类型的 PushStyleVar() 变体！");
         return;
     }
     ImVec2* pvar = (ImVec2*)var_info->GetVarPtr(&g.Style);
@@ -3616,7 +3616,7 @@ void ImGui::PushStyleVarY(ImGuiStyleVar idx, float val_y)
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->DataType != ImGuiDataType_Float || var_info->Count != 2)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PushStyleVar() variant with wrong type!");
+        IM_ASSERT_USER_ERROR(0, "调用错误类型的 PushStyleVar() 变体！");
         return;
     }
     ImVec2* pvar = (ImVec2*)var_info->GetVarPtr(&g.Style);
@@ -3630,7 +3630,7 @@ void ImGui::PushStyleVar(ImGuiStyleVar idx, const ImVec2& val)
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->DataType != ImGuiDataType_Float || var_info->Count != 2)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PushStyleVar() variant with wrong type!");
+        IM_ASSERT_USER_ERROR(0, "调用错误类型的 PushStyleVar() 变体！");
         return;
     }
     ImVec2* pvar = (ImVec2*)var_info->GetVarPtr(&g.Style);
@@ -3643,7 +3643,7 @@ void ImGui::PopStyleVar(int count)
     ImGuiContext& g = *GImGui;
     if (g.StyleVarStack.Size < count)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopStyleVar() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopStyleVar() 次数过多！");
         count = g.StyleVarStack.Size;
     }
     while (count > 0)
@@ -4338,8 +4338,8 @@ void ImGui::Initialize()
 void ImGui::Shutdown()
 {
     ImGuiContext& g = *GImGui;
-    IM_ASSERT_USER_ERROR(g.IO.BackendPlatformUserData == NULL, "Forgot to shutdown Platform backend?");
-    IM_ASSERT_USER_ERROR(g.IO.BackendRendererUserData == NULL, "Forgot to shutdown Renderer backend?");
+    IM_ASSERT_USER_ERROR(g.IO.BackendPlatformUserData == NULL, "忘记关闭平台后端？");
+    IM_ASSERT_USER_ERROR(g.IO.BackendRendererUserData == NULL, "忘记关闭渲染器后端？");
 
     // The fonts atlas can be used prior to calling NewFrame(), so we clear it even if g.Initialized is FALSE (which would happen if we never called NewFrame)
     for (ImFontAtlas* atlas : g.FontAtlases)
@@ -4708,7 +4708,7 @@ bool ImGui::IsItemHovered(ImGuiHoveredFlags flags)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    IM_ASSERT_USER_ERROR((flags & ~ImGuiHoveredFlags_AllowedMaskForIsItemHovered) == 0, "Invalid flags for IsItemHovered()!");
+    IM_ASSERT_USER_ERROR((flags & ~ImGuiHoveredFlags_AllowedMaskForIsItemHovered) == 0, "IsItemHovered() 的标志无效！");
 
     if (g.NavHighlightItemUnderNav && g.NavCursorVisible && !(flags & ImGuiHoveredFlags_NoNavOverride))
     {
@@ -5622,7 +5622,7 @@ void ImGui::NewFrame()
 #endif
 
     // Create implicit/fallback window - which we will only render it if the user has added something to it.
-    // We don't use "Debug" to avoid colliding with user trying to create a "Debug" window with custom flags.
+    // We don't use "调试" to avoid colliding with user trying to create a "调试" window with custom flags.
     // This fallback is particularly important as it prevents ImGui:: calls from crashing.
     g.WithinFrameScopeWithImplicitWindow = true;
     SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
@@ -5850,7 +5850,7 @@ void ImGui::EndFrame()
         return;
     if (!g.WithinFrameScope)
     {
-        IM_ASSERT_USER_ERROR(g.WithinFrameScope, "Forgot to call ImGui::NewFrame()?");
+        IM_ASSERT_USER_ERROR(g.WithinFrameScope, "忘记调用 ImGui::NewFrame()？");
         return;
     }
 
@@ -5873,7 +5873,7 @@ void ImGui::EndFrame()
     }
     g.WantTextInputNextFrame = ime_data->WantTextInput ? 1 : 0;
 
-    // Hide implicit/fallback "Debug" window if it hasn't been used
+    // Hide implicit/fallback "调试" window if it hasn't been used
     g.WithinFrameScopeWithImplicitWindow = false;
     if (g.CurrentWindow && !g.CurrentWindow->WriteAccessed)
         g.CurrentWindow->Active = false;
@@ -7254,7 +7254,7 @@ static void SetWindowActiveForSkipRefresh(ImGuiWindow* window)
 }
 
 // Push a new Dear ImGui window to add widgets to.
-// - A default window called "Debug" is automatically stacked at the beginning of every frame so you can use widgets without explicitly calling a Begin/End pair.
+// - A default window called "调试" is automatically stacked at the beginning of every frame so you can use widgets without explicitly calling a Begin/End pair.
 // - Begin/End can be called multiple times during the frame with the same window name to append content.
 // - The window name is used as a unique identifier to preserve window information across frames (and save rudimentary information to the .ini file).
 //   You can use the "##" or "###" markers to use the same label with different id, or same id with different label. See documentation at the top of this file.
@@ -7287,7 +7287,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
     window->IsFallbackWindow = (g.CurrentWindowStack.Size == 0 && g.WithinFrameScopeWithImplicitWindow);
 
     // Update the Appearing flag
-    bool window_just_activated_by_user = (window->LastFrameActive < current_frame - 1);   // Not using !WasActive because the implicit "Debug" window would always toggle off->on
+    bool window_just_activated_by_user = (window->LastFrameActive < current_frame - 1);   // Not using !WasActive because the implicit "调试" window would always toggle off->on
     if (flags & ImGuiWindowFlags_Popup)
     {
         ImGuiPopupData& popup_ref = g.OpenPopupStack[g.BeginPopupStack.Size];
@@ -7964,7 +7964,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
     if (!window->SkipRefresh)
         PushClipRect(window->InnerClipRect.Min, window->InnerClipRect.Max, true);
 
-    // Clear 'accessed' flag last thing (After PushClipRect which will set the flag. We want the flag to stay false when the default "Debug" window is unused)
+    // Clear 'accessed' flag last thing (After PushClipRect which will set the flag. We want the flag to stay false when the default "调试" window is unused)
     window->WriteAccessed = false;
     window->BeginCount++;
     g.NextWindowData.ClearFlags();
@@ -8045,14 +8045,14 @@ void ImGui::End()
     // Error checking: verify that user hasn't called End() too many times!
     if (g.CurrentWindowStack.Size <= 1 && g.WithinFrameScopeWithImplicitWindow)
     {
-        IM_ASSERT_USER_ERROR(g.CurrentWindowStack.Size > 1, "Calling End() too many times!");
+        IM_ASSERT_USER_ERROR(g.CurrentWindowStack.Size > 1, "调用 End() 次数过多！");
         return;
     }
     ImGuiWindowStackData& window_stack_data = g.CurrentWindowStack.back();
 
     // Error checking: verify that user doesn't directly call End() on a child window.
     if (window->Flags & ImGuiWindowFlags_ChildWindow)
-        IM_ASSERT_USER_ERROR(g.WithinEndChildID == window->ID, "Must call EndChild() and not End()!");
+        IM_ASSERT_USER_ERROR(g.WithinEndChildID == window->ID, "必须调用 EndChild() 而非 End()！");
 
     // Close anything that is open
     if (window->DC.CurrentColumns)
@@ -8109,7 +8109,7 @@ void ImGui::PopItemFlag()
     ImGuiContext& g = *GImGui;
     if (g.ItemFlagsStack.Size <= 1)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopItemFlag() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopItemFlag() 次数过多！");
         return;
     }
     g.ItemFlagsStack.pop_back();
@@ -8143,7 +8143,7 @@ void ImGui::EndDisabled()
     ImGuiContext& g = *GImGui;
     if (g.DisabledStackSize <= 0)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling EndDisabled() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 EndDisabled() 次数过多！");
         return;
     }
     g.DisabledStackSize--;
@@ -8193,7 +8193,7 @@ void ImGui::PopTextWrapPos()
     ImGuiWindow* window = g.CurrentWindow;
     if (window->DC.TextWrapPosStack.Size <= 0)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopTextWrapPos() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopTextWrapPos() 次数过多！");
         return;
     }
     window->DC.TextWrapPos = window->DC.TextWrapPosStack.back();
@@ -8269,7 +8269,7 @@ bool ImGui::IsWindowAbove(ImGuiWindow* potential_above, ImGuiWindow* potential_b
 bool ImGui::IsWindowHovered(ImGuiHoveredFlags flags)
 {
     ImGuiContext& g = *GImGui;
-    IM_ASSERT_USER_ERROR((flags & ~ImGuiHoveredFlags_AllowedMaskForIsWindowHovered) == 0, "Invalid flags for IsWindowHovered()!");
+    IM_ASSERT_USER_ERROR((flags & ~ImGuiHoveredFlags_AllowedMaskForIsWindowHovered) == 0, "IsWindowHovered() 的标志无效！");
 
     ImGuiWindow* ref_window = g.HoveredWindow;
     ImGuiWindow* cur_window = g.CurrentWindow;
@@ -8587,7 +8587,7 @@ void ImGui::PopFocusScope()
     ImGuiContext& g = *GImGui;
     if (g.FocusScopeStack.Size <= g.StackSizesInBeginForCurrentWindow->SizeOfFocusScopeStack)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopFocusScope() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopFocusScope() 次数过多！");
         return;
     }
     g.FocusScopeStack.pop_back();
@@ -8930,7 +8930,7 @@ void  ImGui::PopFont()
     ImGuiContext& g = *GImGui;
     if (g.FontStack.Size <= 0)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopFont() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopFont() 次数过多！");
         return;
     }
     ImFontStackData* font_stack_data = &g.FontStack.back();
@@ -9074,7 +9074,7 @@ void ImGui::PopID()
     ImGuiWindow* window = GImGui->CurrentWindow;
     if (window->IDStack.Size <= 1)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopID() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopID() 次数过多！");
         return;
     }
     window->IDStack.pop_back();
@@ -10623,7 +10623,7 @@ void ImGui::ErrorCheckUsingSetCursorPosToExtendParentBoundaries()
         return;
     if (window->SkipItems)
         return;
-    IM_ASSERT_USER_ERROR(0, "Code uses SetCursorPos()/SetCursorScreenPos() to extend window/parent boundaries.\nPlease submit an item e.g. Dummy() afterwards in order to grow window/parent boundaries.");
+    IM_ASSERT_USER_ERROR(0, "代码使用 SetCursorPos()/SetCursorScreenPos() 扩展窗口/父级边界。\n请随后提交一个项目（例如 Dummy()）以增长窗口/父级边界。");
 
     // For reference, the old behavior was essentially:
     //window->DC.CursorMaxPos = ImMax(window->DC.CursorMaxPos, window->DC.CursorPos);
@@ -10746,18 +10746,18 @@ void ImGui::ErrorRecoveryTryToRecoverState(const ImGuiErrorRecoveryState* state_
         {
             if (g.CurrentTable != NULL && g.CurrentTable->InnerWindow == g.CurrentWindow)
             {
-                IM_ASSERT_USER_ERROR(0, "Missing EndTable()");
+                IM_ASSERT_USER_ERROR(0, "缺少 EndTable()");
                 EndTable();
             }
             else
             {
-                IM_ASSERT_USER_ERROR(0, "Missing EndChild()");
+                IM_ASSERT_USER_ERROR(0, "缺少 EndChild()");
                 EndChild();
             }
         }
         else
         {
-            IM_ASSERT_USER_ERROR(0, "Missing End()");
+            IM_ASSERT_USER_ERROR(0, "缺少 End()");
             End();
         }
     }
@@ -10774,7 +10774,7 @@ void    ImGui::ErrorRecoveryTryToRecoverWindowState(const ImGuiErrorRecoveryStat
 
     while (g.CurrentTable != NULL && g.CurrentTable->InnerWindow == g.CurrentWindow) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing EndTable()");
+        IM_ASSERT_USER_ERROR(0, "缺少 EndTable()");
         EndTable();
     }
 
@@ -10783,38 +10783,38 @@ void    ImGui::ErrorRecoveryTryToRecoverWindowState(const ImGuiErrorRecoveryStat
     // FIXME: Can't recover from inside BeginTabItem/EndTabItem yet.
     while (g.CurrentTabBar != NULL && g.CurrentTabBar->Window == window) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing EndTabBar()");
+        IM_ASSERT_USER_ERROR(0, "缺少 EndTabBar()");
         EndTabBar();
     }
     while (g.CurrentMultiSelect != NULL && g.CurrentMultiSelect->Storage->Window == window) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing EndMultiSelect()");
+        IM_ASSERT_USER_ERROR(0, "缺少 EndMultiSelect()");
         EndMultiSelect();
     }
     if (window->DC.MenuBarAppending) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing EndMenuBar()");
+        IM_ASSERT_USER_ERROR(0, "缺少 EndMenuBar()");
         EndMenuBar();
     }
     while (window->DC.TreeDepth > state_in->SizeOfTreeStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing TreePop()");
+        IM_ASSERT_USER_ERROR(0, "缺少 TreePop()");
         TreePop();
     }
     while (g.GroupStack.Size > state_in->SizeOfGroupStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing EndGroup()");
+        IM_ASSERT_USER_ERROR(0, "缺少 EndGroup()");
         EndGroup();
     }
     IM_ASSERT(g.GroupStack.Size == state_in->SizeOfGroupStack);
     while (window->IDStack.Size > state_in->SizeOfIDStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing PopID()");
+        IM_ASSERT_USER_ERROR(0, "缺少 PopID()");
         PopID();
     }
     while (g.DisabledStackSize > state_in->SizeOfDisabledStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing EndDisabled()");
+        IM_ASSERT_USER_ERROR(0, "缺少 EndDisabled()");
         if (g.CurrentItemFlags & ImGuiItemFlags_Disabled)
             EndDisabled();
         else
@@ -10826,27 +10826,27 @@ void    ImGui::ErrorRecoveryTryToRecoverWindowState(const ImGuiErrorRecoveryStat
     IM_ASSERT(g.DisabledStackSize == state_in->SizeOfDisabledStack);
     while (g.ColorStack.Size > state_in->SizeOfColorStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing PopStyleColor()");
+        IM_ASSERT_USER_ERROR(0, "缺少 PopStyleColor()");
         PopStyleColor();
     }
     while (g.ItemFlagsStack.Size > state_in->SizeOfItemFlagsStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing PopItemFlag()");
+        IM_ASSERT_USER_ERROR(0, "缺少 PopItemFlag()");
         PopItemFlag();
     }
     while (g.StyleVarStack.Size > state_in->SizeOfStyleVarStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing PopStyleVar()");
+        IM_ASSERT_USER_ERROR(0, "缺少 PopStyleVar()");
         PopStyleVar();
     }
     while (g.FontStack.Size > state_in->SizeOfFontStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing PopFont()");
+        IM_ASSERT_USER_ERROR(0, "缺少 PopFont()");
         PopFont();
     }
     while (g.FocusScopeStack.Size > state_in->SizeOfFocusScopeStack) //-V1044
     {
-        IM_ASSERT_USER_ERROR(0, "Missing PopFocusScope()");
+        IM_ASSERT_USER_ERROR(0, "缺少 PopFocusScope()");
         PopFocusScope();
     }
     //IM_ASSERT(g.FocusScopeStack.Size == state_in->SizeOfFocusScopeStack);
@@ -10905,27 +10905,27 @@ void ImGui::ErrorCheckEndFrameFinalizeErrorTooltip()
         g.DebugDrawIdConflictsCount = g.HoveredIdPreviousFrameItemCount;
     if (g.DebugDrawIdConflicts != 0 && g.DebugItemPickerActive == false && BeginErrorTooltip())
     {
-        Text("Programmer error: %d visible items with conflicting ID!", g.DebugDrawIdConflictsCount);
-        BulletText("Code should use PushID()/PopID() in loops, or append \"##xx\" to same-label identifiers!");
-        BulletText("Empty label e.g. Button(\"\") == same ID as parent widget/node. Use Button(\"##xx\") instead!");
+        Text("编程错误：%d 个可见项存在 ID 冲突！", g.DebugDrawIdConflictsCount);
+        BulletText("代码应在循环中使用 PushID()/PopID()，或为相同标签标识符添加 \"##xx\" 后缀！");
+        BulletText("空标签（如 Button(\"\")）会与父控件/节点共用 ID。请改用 Button(\"##xx\")！");
         //BulletText("Code intending to use duplicate ID may use e.g. PushItemFlag(ImGuiItemFlags_AllowDuplicateId, true); ... PopItemFlag()"); // Not making this too visible for fear of it being abused.
-        BulletText("Set io.ConfigDebugHighlightIdConflicts=false to disable this warning in non-programmers builds.");
+        BulletText("设置 io.ConfigDebugHighlightIdConflicts=false 可在非编程版本中禁用此警告。");
         Separator();
         if (g.IO.ConfigDebugHighlightIdConflictsShowItemPicker)
         {
-            Text("(Hold CTRL to: use ");
+            Text("（按住 CTRL 可：使用");
             SameLine(0.0f, 0.0f);
-            if (SmallButton("Item Picker"))
+            if (SmallButton("项目拾取器"))
                 DebugStartItemPicker();
             SameLine(0.0f, 0.0f);
-            Text(" to break in item call-stack, or ");
+            Text("中断项目调用栈，或");
         }
         else
         {
-            Text("(Hold CTRL to ");
+            Text("（按住 CTRL 可");
         }
         SameLine(0.0f, 0.0f);
-        if (SmallButton("Open FAQ->About ID Stack System") && g.PlatformIO.Platform_OpenInShellFn != NULL)
+        if (SmallButton("打开FAQ->关于 ID 堆栈系统") && g.PlatformIO.Platform_OpenInShellFn != NULL)
             g.PlatformIO.Platform_OpenInShellFn(&g, "https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#qa-usage");
         SameLine(0.0f, 0.0f);
         Text(")");
@@ -10935,9 +10935,9 @@ void ImGui::ErrorCheckEndFrameFinalizeErrorTooltip()
     if (g.ErrorCountCurrentFrame > 0 && BeginErrorTooltip()) // Amend at end of frame
     {
         Separator();
-        Text("(Hold CTRL to:");
+        Text("（按住 CTRL 可：");
         SameLine();
-        if (SmallButton("Enable Asserts"))
+        if (SmallButton("启用断言"))
             g.IO.ConfigErrorRecoveryEnableAssert = true;
         //SameLine();
         //if (SmallButton("Hide Error Tooltips"))
@@ -10962,7 +10962,7 @@ bool ImGui::BeginErrorTooltip()
     PopStyleColor();
     if (is_visible && g.CurrentWindow->BeginCount == 1)
     {
-        SeparatorText("MESSAGE FROM DEAR IMGUI");
+        SeparatorText("DEAR IMGUI 消息");
         BringWindowToDisplayFront(g.CurrentWindow);
         BringWindowToFocusFront(g.CurrentWindow);
         g.ErrorTooltipLockedPos = GetWindowPos();
@@ -11315,7 +11315,7 @@ void ImGui::PopItemWidth()
     ImGuiWindow* window = g.CurrentWindow;
     if (window->DC.ItemWidthStack.Size <= 0)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling PopItemWidth() too many times!");
+        IM_ASSERT_USER_ERROR(0, "调用 PopItemWidth() 次数过多！");
         return;
     }
     window->DC.ItemWidth = window->DC.ItemWidthStack.back();
@@ -12251,7 +12251,7 @@ void ImGui::EndPopup()
     ImGuiWindow* window = g.CurrentWindow;
     if ((window->Flags & ImGuiWindowFlags_Popup) == 0 || g.BeginPopupStack.Size == 0)
     {
-        IM_ASSERT_USER_ERROR(0, "Calling EndPopup() too many times or in wrong window!");
+        IM_ASSERT_USER_ERROR(0, "调用 EndPopup() 次数过多或在错误窗口中调用！");
         return;
     }
 
@@ -15822,7 +15822,7 @@ void ImGui::DebugTextEncoding(const char* str)
     Text("Text: \"%s\"", str);
     if (!BeginTable("##DebugTextEncoding", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Resizable))
         return;
-    TableSetupColumn("Offset");
+    TableSetupColumn("偏移");
     TableSetupColumn("UTF-8");
     TableSetupColumn("Glyph");
     TableSetupColumn("Codepoint");
@@ -17565,13 +17565,13 @@ void ImGui::UpdateDebugToolItemPicker()
     SetNextWindowBgAlpha(0.70f);
     if (!BeginTooltip())
         return;
-    Text("HoveredId: 0x%08X", hovered_id);
-    Text("Press ESC to abort picking.");
-    const char* mouse_button_names[] = { "Left", "Right", "Middle" };
+    Text("悬停标识: 0x%08X", hovered_id);
+    Text("按 ESC 键终止选取.");
+    const char* mouse_button_names[] = { "左键", "右键", "中键" };
     if (change_mapping)
-        Text("Remap w/ Ctrl+Shift: click anywhere to select new mouse button.");
+        Text("使用 Ctrl+Shift 重新映射：单击任意位置选择新的鼠标按钮.");
     else
-        TextColored(GetStyleColorVec4(hovered_id ? ImGuiCol_Text : ImGuiCol_TextDisabled), "Click %s Button to break in debugger! (remap w/ Ctrl+Shift)", mouse_button_names[g.DebugItemPickerMouseButton]);
+        TextColored(GetStyleColorVec4(hovered_id ? ImGuiCol_Text : ImGuiCol_TextDisabled), "单击%s按钮中断调试器！(用 Ctrl+Shift 重新映射）", mouse_button_names[g.DebugItemPickerMouseButton]);
     EndTooltip();
 }
 
@@ -17711,12 +17711,12 @@ void ImGui::ShowIDStackToolWindow(bool* p_open)
     }
     Text("0x%08X", tool->QueryId);
     SameLine();
-    MetricsHelpMarker("Hover an item with the mouse to display elements of the ID Stack leading to the item's final ID.\nEach level of the stack correspond to a PushID() call.\nAll levels of the stack are hashed together to make the final ID of a widget (ID displayed at the bottom level of the stack).\nRead FAQ entry about the ID stack for details.");
+    MetricsHelpMarker("用鼠标悬停项目显示 ID 堆栈中的元素从而得出项目的最终 ID.\n堆栈的每一级都对应一个 PushID() 调用.\n堆栈的所有层级都会散列在一起，以生成部件的最终 ID（显示在堆栈底层的 ID）。\n有关详细信息，请阅读常见问题中有关 ID 堆栈的条目。");
 
     // CTRL+C to copy path
     const float time_since_copy = (float)g.Time - tool->CopyToClipboardLastTime;
     SameLine();
-    PushStyleVarY(ImGuiStyleVar_FramePadding, 0.0f); Checkbox("Ctrl+C: copy path", &tool->CopyToClipboardOnCtrlC); PopStyleVar();
+    PushStyleVarY(ImGuiStyleVar_FramePadding, 0.0f); Checkbox("Ctrl+C: 复制路径", &tool->CopyToClipboardOnCtrlC); PopStyleVar();
     SameLine();
     TextColored((time_since_copy >= 0.0f && time_since_copy < 0.75f && ImFmod(time_since_copy, 0.25f) < 0.25f * 0.5f) ? ImVec4(1.f, 1.f, 0.3f, 1.f) : ImVec4(), "*COPIED*");
     if (tool->CopyToClipboardOnCtrlC && Shortcut(ImGuiMod_Ctrl | ImGuiKey_C, ImGuiInputFlags_RouteGlobal | ImGuiInputFlags_RouteOverFocused))
@@ -17725,9 +17725,9 @@ void ImGui::ShowIDStackToolWindow(bool* p_open)
         SetClipboardText(tool->ResultPathBuf.c_str());
     }
 
-    Text("- Path \"%s\"", tool->ResultPathBuf.c_str());
+    Text("- 路径 \"%s\"", tool->ResultPathBuf.c_str());
 #ifdef IMGUI_ENABLE_TEST_ENGINE
-    Text("- Label \"%s\"", tool->QueryId ? ImGuiTestEngine_FindItemDebugLabel(&g, tool->QueryId) : "");
+    Text("- 标签 \"%s\"", tool->QueryId ? ImGuiTestEngine_FindItemDebugLabel(&g, tool->QueryId) : "");
 #endif
 
     Separator();
