@@ -10876,12 +10876,12 @@ bool    ImGui::ErrorLog(const char* msg)
         {
             if (g.ErrorCountCurrentFrame < 20)
             {
-                Text("In window '%s': %s", window ? window->Name : "NULL", msg);
+                Text("在窗口 '%s' 中：%s", window ? window->Name : "NULL", msg);
                 if (window && (!window->IsFallbackWindow || window->WasActive))
                     GetForegroundDrawList(window)->AddRect(window->Pos, window->Pos + window->Size, IM_COL32(255, 0, 0, 255));
             }
             if (g.ErrorCountCurrentFrame == 20)
-                Text("(and more errors)");
+                Text("（以及其他更多错误）");
             // EndFrame() will amend debug buttons to this window, after all errors have been submitted.
             EndErrorTooltip();
         }
